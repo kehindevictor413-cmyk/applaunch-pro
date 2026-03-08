@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X∞ Smart Locator - Real-Time Device Tracking</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    .navbar {
+      padding: 20px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 100;
+      background: rgba(26, 26, 46, 0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .logo {
+      font-size: 32px;
+      font-weight: bold;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: #fff;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #667eea;
+    }
+
+    .btn {
+      padding: 10px 25px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s;
+      display: inline-block;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 100px 20px 50px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .background-animation {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(102, 126, 234, 0.3), transparent);
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .circle:nth-child(1) {
+      width: 400px;
+      height: 400px;
+      top: -200px;
+      left: -200px;
+    }
+
+    .circle:nth-child(2) {
+      width: 500px;
+      height: 500px;
+      bottom: -250px;
+      right: -250px;
+      animation-delay: 7s;
+    }
+
+    .circle:nth-child(3) {
+      width: 300px;
+      height: 300px;
+      top: 50%;
+      left: 50%;
+      animation-delay: 14s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(100px, -100px) scale(1.2); }
+      66% { transform: translate(-100px, 100px) scale(0.8); }
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+    }
+
+    .hero h1 {
+      font-size: 64px;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 40px rgba(102, 126, 234, 0.3);
+    }
+
+    .hero p {
+      font-size: 24px;
+      margin-bottom: 40px;
+      color: #c0c0c0;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .features {
+      padding: 100px 50px;
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .features h2 {
+      text-align: center;
+      font-size: 48px;
+      margin-bottom: 60px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+    }
+
+    .feature-icon {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+      font-size: 24px;
+      margin-bottom: 15px;
+      color: #a0a0ff;
+    }
+
+    .feature-card p {
+      color: #c0c0c0;
+      line-height: 1.6;
+    }
+
+    footer {
+      text-align: center;
+      padding: 40px;
+      background: rgba(0, 0, 0, 0.3);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 40px;
+      }
+
+      .hero p {
+        font-size: 18px;
+      }
+
+      .navbar {
+        padding: 15px 20px;
+      }
+
+      .nav-links {
+        gap: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">X∞</div>
+    <div class="nav-links">
+      <a href="/login">Login</a>
+      <a href="/signup" class="btn">Get Started</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="background-animation">
+      <div class="circle"></div>
+      <div class="circle"></div>
+      <div class="circle"></div>
+    </div>
+    
+    <div class="hero-content">
+      <h1>X∞ Smart Locator</h1>
+      <p>Track your devices and loved ones in real-time with advanced GPS technology</p>
+      <div class="hero-buttons">
+        <a href="/signup" class="btn">Start Tracking Now</a>
+        <a href="/login" class="btn">Access Dashboard</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="features">
+    <h2>Powerful Features</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">📍</div>
+        <h3>Real-Time GPS Tracking</h3>
+        <p>Monitor device locations with pinpoint accuracy. Updates every 5 seconds for live tracking.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🗺️</div>
+        <h3>Live Map View</h3>
+        <p>See all your devices on an interactive map with real-time position updates and movement trails.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🚨</div>
+        <h3>Lost Phone Mode</h3>
+        <p>Activate emergency tracking with 3-second updates and loud recovery notifications.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">👨‍👩‍👧‍👦</div>
+        <h3>Family Tracking</h3>
+        <p>Create private groups to share locations with family members and monitor everyone's safety.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3>Location History</h3>
+        <p>Review past movements with detailed travel paths and timeline playback features.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔔</div>
+        <h3>Smart Notifications</h3>
+        <p>Get instant alerts for offline devices, low battery, and unexpected location changes.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <h3>Secure & Private</h3>
+        <p>End-to-end encrypted connections with secure user authentication and data protection.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3>Multi-Device Support</h3>
+        <p>Track unlimited devices including phones, tablets, and laptops from a single dashboard.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3>Instant Setup</h3>
+        <p>Start tracking in seconds with a simple link. No app installation required for basic tracking.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 X∞ Smart Locator. All rights reserved.</p>
+  </footer>
+</body>
+</html>

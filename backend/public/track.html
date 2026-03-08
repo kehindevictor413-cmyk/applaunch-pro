@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>X∞ Smart Locator - Tracking</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .background-animation {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(102, 126, 234, 0.4), transparent);
+      animation: float 20s infinite ease-in-out;
+    }
+
+    .circle:nth-child(1) {
+      width: 300px;
+      height: 300px;
+      top: -150px;
+      left: -150px;
+      animation-delay: 0s;
+    }
+
+    .circle:nth-child(2) {
+      width: 400px;
+      height: 400px;
+      bottom: -200px;
+      right: -200px;
+      animation-delay: 5s;
+    }
+
+    .circle:nth-child(3) {
+      width: 250px;
+      height: 250px;
+      top: 50%;
+      left: 50%;
+      animation-delay: 10s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      33% { transform: translate(50px, -50px) scale(1.1); }
+      66% { transform: translate(-50px, 50px) scale(0.9); }
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 40px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .logo {
+      font-size: 48px;
+      font-weight: bold;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+      text-shadow: 0 0 30px rgba(102, 126, 234, 0.5);
+    }
+
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #a0a0ff;
+    }
+
+    .status {
+      padding: 15px;
+      background: rgba(102, 126, 234, 0.2);
+      border-radius: 10px;
+      margin: 20px 0;
+      border: 1px solid rgba(102, 126, 234, 0.3);
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 8px;
+      animation: pulse 2s infinite;
+    }
+
+    .status-indicator.active {
+      background: #4ade80;
+      box-shadow: 0 0 10px #4ade80;
+    }
+
+    .status-indicator.inactive {
+      background: #f87171;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .info-grid {
+      display: grid;
+      gap: 15px;
+      margin-top: 20px;
+      text-align: left;
+    }
+
+    .info-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
+      border-radius: 8px;
+      border-left: 3px solid #667eea;
+    }
+
+    .info-label {
+      font-size: 12px;
+      color: #a0a0a0;
+      margin-bottom: 5px;
+    }
+
+    .info-value {
+      font-size: 16px;
+      color: #fff;
+    }
+
+    .btn {
+      margin-top: 20px;
+      padding: 12px 30px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+    }
+
+    .lost-mode-alert {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      animation: alertPulse 1s infinite;
+    }
+
+    @keyframes alertPulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.5); }
+      50% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.8); }
+    }
+
+    .error {
+      color: #f87171;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="background-animation">
+    <div class="circle"></div>
+    <div class="circle"></div>
+    <div class="circle"></div>
+  </div>
+
+  <div class="container">
+    <div class="logo">X∞</div>
+    <h1>Smart Locator</h1>
+    
+    <div id="content">
+      <div class="status">
+        <span class="status-indicator inactive"></span>
+        <span>Initializing tracking...</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const deviceId = window.location.pathname.split('/').pop();
+    let isTracking = false;
+    let updateInterval = 5000;
+    let intervalId = null;
+    let deviceInfo = null;
+
+    async function loadDeviceInfo() {
+      try {
+        const response = await fetch(`/api/track/${deviceId}/info`);
+        if (!response.ok) throw new Error('Device not found');
+        
+        deviceInfo = await response.json();
+        updateInterval = deviceInfo.device.updateInterval;
+        
+        updateUI();
+      } catch (error) {
+        showError('Device not found or invalid tracking link');
+      }
+    }
+
+    function updateUI() {
+      const content = document.getElementById('content');
+      
+      let html = `
+        <div class="status">
+          <span class="status-indicator ${isTracking ? 'active' : 'inactive'}"></span>
+          <span>${isTracking ? 'Connected to X∞ Smart Locator' : 'Waiting for permission...'}</span>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-label">Device Name</div>
+            <div class="info-value">${deviceInfo.device.deviceName}</div>
+          </div>
+          <div class="info-item">
+            <div class="info-label">Device Type</div>
+            <div class="info-value">${deviceInfo.device.deviceType}</div>
+          </div>
+          ${deviceInfo.device.ownerNickname ? `
+          <div class="info-item">
+            <div class="info-label">Owner</div>
+            <div class="info-value">${deviceInfo.device.ownerNickname}</div>
+          </div>
+          ` : ''}
+        </div>
+      `;
+
+      if (deviceInfo.device.isLostMode) {
+        html += `
+          <div class="lost-mode-alert">
+            ⚠️ This device is being tracked for recovery
+          </div>
+        `;
+      }
+
+      if (!isTracking) {
+        html += `
+          <button class="btn" onclick="requestLocationPermission()">Enable Location Tracking</button>
+        `;
+      }
+
+      content.innerHTML = html;
+    }
+
+    async function requestLocationPermission() {
+      if (!navigator.geolocation) {
+        showError('Geolocation is not supported by your browser');
+        return;
+      }
+
+      try {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            isTracking = true;
+            updateUI();
+            startTracking();
+            sendLocation(position);
+          },
+          (error) => {
+            showError('Location permission denied. Please allow location access to continue.');
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          }
+        );
+      } catch (error) {
+        showError('Error requesting location permission');
+      }
+    }
+
+    function startTracking() {
+      if (intervalId) clearInterval(intervalId);
+
+      intervalId = setInterval(() => {
+        navigator.geolocation.getCurrentPosition(
+          sendLocation,
+          (error) => console.error('Location error:', error),
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          }
+        );
+      }, updateInterval);
+
+      window.addEventListener('beforeunload', () => {
+        if (intervalId) clearInterval(intervalId);
+      });
+    }
+
+    async function sendLocation(position) {
+      const locationData = {
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        accuracy: position.coords.accuracy,
+        altitude: position.coords.altitude,
+        speed: position.coords.speed,
+        heading: position.coords.heading,
+        timestamp: Math.floor(Date.now() / 1000)
+      };
+
+      if ('getBattery' in navigator) {
+        try {
+          const battery = await navigator.getBattery();
+          locationData.batteryLevel = Math.round(battery.level * 100);
+        } catch (e) {
+          console.log('Battery API not available');
+        }
+      }
+
+      try {
+        const response = await fetch(`/api/track/${deviceId}/location`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(locationData)
+        });
+
+        if (!response.ok) throw new Error('Failed to send location');
+
+        const result = await response.json();
+        
+        if (result.isLostMode && updateInterval !== 3000) {
+          updateInterval = 3000;
+          startTracking();
+        } else if (!result.isLostMode && updateInterval !== 5000) {
+          updateInterval = 5000;
+          startTracking();
+        }
+      } catch (error) {
+        console.error('Error sending location:', error);
+      }
+    }
+
+    function showError(message) {
+      const content = document.getElementById('content');
+      content.innerHTML = `
+        <div class="status">
+          <span class="status-indicator inactive"></span>
+          <span>Error</span>
+        </div>
+        <div class="error">${message}</div>
+      `;
+    }
+
+    loadDeviceInfo();
+  </script>
+</body>
+</html>
